@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Sprout, Bug, Worm, Leaf, ShieldQuestion, Microscope, CircleAlert } from 'lucide-react';
 import type { CropAnalysisResult } from '@/types';
 import { Card, CardHeader } from '@/components/ui/Card';
@@ -11,7 +12,7 @@ const ISSUE_META = {
   unknown: { icon: ShieldQuestion, label: 'Unclear', tone: 'earth' as const },
 };
 
-export function CropAnalysis({ result }: { result: CropAnalysisResult }) {
+export const CropAnalysis = memo(function CropAnalysis({ result }: { result: CropAnalysisResult }) {
   const meta = ISSUE_META[result.issueType];
   const Icon = meta.icon;
   const confidenceColor =
@@ -100,7 +101,7 @@ export function CropAnalysis({ result }: { result: CropAnalysisResult }) {
       </div>
     </Card>
   );
-}
+});
 
 function severityToLevel(s: 'Low' | 'Medium' | 'High'): 'success' | 'warning' | 'danger' {
   return s === 'Low' ? 'success' : s === 'Medium' ? 'warning' : 'danger';

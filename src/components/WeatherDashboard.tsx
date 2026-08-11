@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import { Droplets, Wind, CloudRain, Thermometer, Sun, Gauge, Eye } from 'lucide-react';
 import type { WeatherData } from '@/types';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { WeatherIcon } from '@/components/ui/WeatherIcon';
 import { Badge } from '@/components/ui/Badges';
 
-export function WeatherDashboard({ weather }: { weather: WeatherData }) {
+export const WeatherDashboard = memo(function WeatherDashboard({ weather }: { weather: WeatherData }) {
   const { current, forecast, source } = weather;
 
   const stats = [
@@ -81,7 +82,7 @@ export function WeatherDashboard({ weather }: { weather: WeatherData }) {
       </div>
     </Card>
   );
-}
+});
 
 function StatPill({ icon: Icon, label, value, tint }: { icon: typeof Droplets; label: string; value: string; tint: string }) {
   return (

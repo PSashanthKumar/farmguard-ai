@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { UploadCloud, Image as ImageIcon, Trash2, Sparkles } from 'lucide-react';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   disabled?: boolean;
 }
 
-export function ImageUploader({ imageUrl, onImage, onUseDemo, disabled }: Props) {
+export const ImageUploader = memo(function ImageUploader({ imageUrl, onImage, onUseDemo, disabled }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -101,4 +101,4 @@ export function ImageUploader({ imageUrl, onImage, onUseDemo, disabled }: Props)
       )}
     </div>
   );
-}
+});

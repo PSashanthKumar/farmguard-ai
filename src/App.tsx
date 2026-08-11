@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import {
   Leaf,
   CloudSun,
@@ -19,7 +19,7 @@ import {
   DEMO_LOCATION,
   DEMO_WEATHER,
   DEMO_IMAGE_URL,
-  buildDemoBundle,
+  DEMO_CROP,
 } from '@/lib/demoData';
 import { ImageUploader } from '@/components/ImageUploader';
 import { LocationDetector } from '@/components/LocationDetector';
@@ -46,12 +46,19 @@ export default function App() {
   const [demoMode, setDemoMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const blobUrlRef = useRef<string | null>(null);
 
   // When image changes
   const handleImage = useCallback((file: File | null) => {
     setImageFile(file);
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current);
+      blobUrlRef.current = null;
+    }
     if (file) {
-      setImageUrl(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      blobUrlRef.current = url;
+      setImageUrl(url);
       setDemoMode(false);
     } else {
       setImageUrl(null);
@@ -60,15 +67,24 @@ export default function App() {
     setPhase('input');
   }, []);
 
-  // When location changes -> fetch weather
+  // When location changes -> fetch weather (skipped if same location)
   const handleLocation = useCallback(async (loc: GeoLocation) => {
-    setLocation(loc);
+    setLocation((prev) => {
+      if (prev && prev.lat === loc.lat && prev.lng === loc.lng && prev.label === loc.label) {
+        return prev;
+      }
+      return loc;
+    });
+    // Skip fetch if the location hasn't actually changed
+    if (location && location.lat === loc.lat && location.lng === loc.lng && location.label === loc.label) {
+      return;
+    }
     setWeatherLoading(true);
     setError(null);
     const w = await fetchWeather(loc.lat, loc.lng, loc.label);
     setWeather(w);
     setWeatherLoading(false);
-  }, []);
+  }, [location]);
 
   // Demo mode: load everything
   const loadDemo = useCallback(() => {
@@ -95,7 +111,7 @@ export default function App() {
     try {
       let crop: CropAnalysisResult;
       if (demoMode) {
-        crop = buildDemoBundle(weather).crop;
+        crop = DEMO_CROP;
       } else if (imageFile) {
         const features = await extractImageFeatures(imageFile);
         crop = analyzeImageFeatures(features);
@@ -253,7 +269,7 @@ export default function App() {
 
 /* ---------------- Sub-views ---------------- */
 
-function Header({ demoMode }: { demoMode: boolean }) {
+const Header = memo(function Header({ demoMode }: { demoMode: boolean }) {
   return (
     <header className="sticky top-0 z-30 border-b border-brand-100/70 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
@@ -274,9 +290,9 @@ function Header({ demoMode }: { demoMode: boolean }) {
       </div>
     </header>
   );
-}
+});
 
-function Hero() {
+const Hero = memo(function Hero() {
   return (
     <section className="py-10 text-center sm:py-14">
       <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-brand-700 ring-1 ring-brand-100">
@@ -292,9 +308,9 @@ function Hero() {
       </p>
     </section>
   );
-}
+});
 
-function EmptyWeather() {
+const EmptyWeather = memo(function EmptyWeather() {
   return (
     <div className="flex flex-col items-center justify-center py-8 text-center">
       <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky2-50 text-sky2-500">
@@ -304,9 +320,9 @@ function EmptyWeather() {
       <p className="mt-1 text-xs text-earth-400">Live data via Open-Meteo · automatic demo fallback if offline</p>
     </div>
   );
-}
+});
 
-function ResultsHeader({ bundle, demoMode }: { bundle: AnalysisBundle; demoMode: boolean }) {
+const ResultsHeader = memo(function ResultsHeader({ bundle, demoMode }: { bundle: AnalysisBundle; demoMode: boolean }) {
   const overall =
     bundle.crop.severity === 'High' ? { tone: 'red' as const, label: 'High severity' } :
     bundle.crop.severity === 'Medium' ? { tone: 'amber' as const, label: 'Medium severity' } :
@@ -328,9 +344,9 @@ function ResultsHeader({ bundle, demoMode }: { bundle: AnalysisBundle; demoMode:
       </div>
     </div>
   );
-}
+});
 
-function WeatherImpactSummary({ bundle, weather }: { bundle: AnalysisBundle; weather: WeatherData }) {
+const WeatherImpactSummary = memo(function WeatherImpactSummary({ bundle, weather }: { bundle: AnalysisBundle; weather: WeatherData }) {
   const c = weather.current;
   const items = [
     { icon: CloudSun, label: 'Condition', value: c.condition, tint: 'text-sky2-600' },
@@ -358,9 +374,9 @@ function WeatherImpactSummary({ bundle, weather }: { bundle: AnalysisBundle; wea
       </div>
     </Card>
   );
-}
+});
 
-function Footer() {
+const Footer = memo(function Footer() {
   return (
     <footer className="border-t border-brand-100 bg-white/60">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
@@ -382,9 +398,9 @@ function Footer() {
       </div>
     </footer>
   );
-}
+});
 
-function BackgroundDecor() {
+const BackgroundDecor = memo(function BackgroundDecor() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-brand-200/40 blur-3xl" />
@@ -392,4 +408,4 @@ function BackgroundDecor() {
       <div className="absolute inset-0 bg-grid opacity-60" />
     </div>
   );
-}
+});

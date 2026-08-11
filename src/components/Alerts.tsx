@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { Bell, CircleDot } from 'lucide-react';
 import type { FarmAlert } from '@/types';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { LevelColors, LevelIcon } from '@/components/ui/Badges';
 
-export function Alerts({ alerts }: { alerts: FarmAlert[] }) {
+export const Alerts = memo(function Alerts({ alerts }: { alerts: FarmAlert[] }) {
   if (alerts.length === 0) {
     return (
       <Card>
@@ -55,7 +56,7 @@ export function Alerts({ alerts }: { alerts: FarmAlert[] }) {
       </ul>
     </Card>
   );
-}
+});
 
 function rank(l: FarmAlert['level']): number {
   return { danger: 4, warning: 3, info: 2, success: 1 }[l];

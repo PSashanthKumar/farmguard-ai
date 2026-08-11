@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { MapPin, LocateFixed, Check, AlertCircle } from 'lucide-react';
 import type { GeoLocation } from '@/types';
 import { reverseGeocode } from '@/lib/weather';
@@ -10,7 +10,7 @@ interface Props {
   disabled?: boolean;
 }
 
-export function LocationDetector({ location, onLocation, disabled }: Props) {
+export const LocationDetector = memo(function LocationDetector({ location, onLocation, disabled }: Props) {
   const [loadingGps, setLoadingGps] = useState(false);
   const [manual, setManual] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -101,4 +101,4 @@ export function LocationDetector({ location, onLocation, disabled }: Props) {
       )}
     </div>
   );
-}
+});

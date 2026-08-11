@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { ClipboardCheck, Eye, Wrench, Repeat, PhoneCall, CircleCheck } from 'lucide-react';
 import type { FarmActionPlan } from '@/types';
 import { Card, CardHeader } from '@/components/ui/Card';
 
-export function FarmActionPlan({ plan }: { plan: FarmActionPlan }) {
+export const FarmActionPlan = memo(function FarmActionPlan({ plan }: { plan: FarmActionPlan }) {
   const sections = [
     { icon: Eye, title: 'What to check', items: plan.checkNow, tint: 'bg-sky2-50 text-sky2-600 ring-sky2-100' },
     { icon: Wrench, title: 'What to do now', items: plan.doNow, tint: 'bg-brand-50 text-brand-600 ring-brand-100' },
@@ -53,4 +54,4 @@ export function FarmActionPlan({ plan }: { plan: FarmActionPlan }) {
       </div>
     </Card>
   );
-}
+});

@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { Microscope, PhoneCall, CircleCheck, CircleAlert } from 'lucide-react';
 import type { CropAnalysisResult } from '@/types';
 import { Card, CardHeader } from '@/components/ui/Card';
 
-export function ExpertVerification({ crop }: { crop: CropAnalysisResult }) {
+export const ExpertVerification = memo(function ExpertVerification({ crop }: { crop: CropAnalysisResult }) {
   const needed = crop.expertVerificationRecommended;
   return (
     <Card className={needed ? 'border-amber-200 bg-amber-50/40' : 'border-brand-200 bg-brand-50/40'}>
@@ -45,7 +46,7 @@ export function ExpertVerification({ crop }: { crop: CropAnalysisResult }) {
       )}
     </Card>
   );
-}
+});
 
 function Step({ n, text }: { n: number; text: string }) {
   return (

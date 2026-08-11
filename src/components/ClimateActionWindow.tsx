@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Clock, CloudRain, Sun, Eye, ShieldCheck, TriangleAlert, CalendarClock } from 'lucide-react';
 import type { ClimateActionWindow, WindowStatus } from '@/types';
 import { Card, CardHeader } from '@/components/ui/Card';
@@ -9,7 +10,7 @@ const STATUS_META: Record<WindowStatus, { label: string; icon: typeof Sun; bg: s
   monitor: { label: 'MONITOR', icon: Eye, bg: 'bg-sky2-50', ring: 'ring-sky2-300', text: 'text-sky2-700', dot: 'bg-sky2-500' },
 };
 
-export function ClimateActionWindow({ data }: { data: ClimateActionWindow }) {
+export const ClimateActionWindow = memo(function ClimateActionWindow({ data }: { data: ClimateActionWindow }) {
   return (
     <Card className="border-brand-200/80 bg-gradient-to-b from-white to-brand-50/30">
       <CardHeader
@@ -84,4 +85,4 @@ export function ClimateActionWindow({ data }: { data: ClimateActionWindow }) {
       </div>
     </Card>
   );
-}
+});
